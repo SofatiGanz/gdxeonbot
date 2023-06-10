@@ -197,75 +197,6 @@ if (!XeonBotInc.public) {
 if (!m.key.fromMe) return
 }
 
-const venom = require('venom-bot');
-const openai = require('openai');
-
-// Inisialisasi klien OpenAI dengan API key
-const openaiApiKey = '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';
-const openaiClient = new openai.OpenAiApi(openaiApiKey);
-
-// Fungsi untuk memanggil OpenAI API
-async function callOpenAI(text) {
-  const response = await openaiClient.complete({
-    engine: 'text-davinci-003',
-    prompt: text,
-    maxTokens: 100,
-    temperature: 0.7,
-    n: 1,
-    stop: ['\n'],
-  });
-
-  return response.choices[0].text.trim();
-}
-
-// Fungsi untuk menangani pesan yang diterima dari WhatsApp
-async function handleReceivedMessage(message) {
-  // Memeriksa apakah pesan terpotong (hanya setengah pesan)
-  if (message.body.endsWith('LanjutkanText')) {
-    // Menggabungkan pesan terpotong dengan pesan sebelumnya
-    const previousMessage = 'GET_PREVIOUS_MESSAGE_FROM_STORAGE'; // Ganti dengan kode untuk mendapatkan pesan sebelumnya dari penyimpanan (misalnya database)
-    const combinedText = previousMessage + message.body.split('LanjutkanText')[0];
-
-    // Memanggil OpenAI untuk melanjutkan teks
-    const generatedText = await callOpenAI(combinedText);
-
-    // Mengirimkan hasil balasan ke WhatsApp
-    venom.create().then((client) => {
-      client
-        .sendText(message.from, generatedText)
-        .catch((error) => {
-          console.error('Error when sending message:', error);
-        });
-    });
-  } else {
-    // Memanggil OpenAI untuk menjawab pesan secara penuh
-    const generatedText = await callOpenAI(message.body);
-
-    // Mengirimkan hasil balasan ke WhatsApp
-    venom.create().then((client) => {
-      client
-        .sendText(message.from, generatedText)
-        .catch((error) => {
-          console.error('Error when sending message:', error);
-        });
-    });
-  }
-}
-
-// Menginisialisasi bot WhatsApp menggunakan Venom
-venom
-  .create()
-  .then((client) => {
-    // Menangani pesan yang diterima
-    client.onMessage((message) => {
-      handleReceivedMessage(message).catch((error) => {
-        console.error('Error when handling message:', error);
-      });
-    });
-  })
-  .catch((error) => {
-    console.error('Error when initializing WhatsApp bot:', error);
-  });
 
 
 //chat counter (console log)
@@ -5149,3 +5080,5 @@ isForwarded: true
 process.on('uncaughtException', function (err) {
 console.log('Caught exception: ', err)
 })
+
+//percobaan ai
